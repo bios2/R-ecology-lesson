@@ -33,4 +33,5 @@ code-handout.R
 link_res.csv
 
 # .DS_store file in img foler
-*.DS_Store
+.DS_Store
+img/.DS_Store
