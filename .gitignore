@@ -31,3 +31,6 @@ code-handout.R
 
 # output from linkchecker
 link_res.csv
+
+# .DS_store file in img foler
+*.DS_Store
