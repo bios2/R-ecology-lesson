@@ -307,7 +307,7 @@ then combine the results. **`dplyr`** makes this very easy through the use of th
 `group_by()` is often used together with `summarize()`, which collapses each
 group into a single-row summary of that group.  `group_by()` takes as arguments
 the column names that contain the **categorical** variables for which you want
-to calculate the summary statistics. So to compute the mean `weight` by sex:
+to calculate the summary statistics. To make sure `summarize()` keeps the groups created with `group_by()`, we can set `.groups = "keep"`. So to compute the mean `weight` by sex:
 
 ```{r, purl = FALSE}
 surveys %>%
