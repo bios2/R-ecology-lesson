@@ -1,6 +1,9 @@
 ---
 title: "Manipulating, analyzing and exporting data with tidyverse"
 author: "Data Carpentry contributors"
+output:
+  html_document:
+    df_print: paged
 ---
 
 ```{r, echo=FALSE, purl=FALSE, message = FALSE}
@@ -304,12 +307,12 @@ then combine the results. **`dplyr`** makes this very easy through the use of th
 `group_by()` is often used together with `summarize()`, which collapses each
 group into a single-row summary of that group.  `group_by()` takes as arguments
 the column names that contain the **categorical** variables for which you want
-to calculate the summary statistics. So to compute the mean `weight` by sex:
+to calculate the summary statistics. To make sure `summarize()` keeps the groups created with `group_by()`, we can set `.groups = "keep"`. So to compute the mean `weight` by sex:
 
 ```{r, purl = FALSE}
 surveys %>%
   group_by(sex) %>%
-  summarize(mean_weight = mean(weight, na.rm = TRUE))
+  summarize(mean_weight = mean(weight, na.rm = TRUE), .groups = "keep")
 ```
 
 You may also have noticed that the output from these calls doesn't run off the
@@ -320,7 +323,7 @@ You can also group by multiple columns:
 ```{r, purl = FALSE}
 surveys %>%
   group_by(sex, species_id) %>%
-  summarize(mean_weight = mean(weight, na.rm = TRUE)) %>% 
+  summarize(mean_weight = mean(weight, na.rm = TRUE), .groups = "keep") %>% 
   tail()
 ```
 
@@ -338,7 +341,7 @@ statistics on weight. Because the missing values are removed first, we can omit
 surveys %>%
   filter(!is.na(weight)) %>%
   group_by(sex, species_id) %>%
-  summarize(mean_weight = mean(weight))
+  summarize(mean_weight = mean(weight), .groups = "keep")
 ```
 
 Here, again, the output from these calls doesn't run off the screen
@@ -350,7 +353,7 @@ display:
 surveys %>%
   filter(!is.na(weight)) %>%
   group_by(sex, species_id) %>%
-  summarize(mean_weight = mean(weight)) %>%
+  summarize(mean_weight = mean(weight), .groups = "keep") %>%
   print(n = 15)
 ```
 
@@ -363,7 +366,8 @@ surveys %>%
   filter(!is.na(weight)) %>%
   group_by(sex, species_id) %>%
   summarize(mean_weight = mean(weight),
-            min_weight = min(weight))
+            min_weight = min(weight), 
+            .groups = "keep")
 ```
 
 It is sometimes useful to rearrange the result of a query to inspect the values. For instance, we can sort on `min_weight` to put the lighter species first:
@@ -374,7 +378,8 @@ surveys %>%
   filter(!is.na(weight)) %>%
   group_by(sex, species_id) %>%
   summarize(mean_weight = mean(weight),
-            min_weight = min(weight)) %>%
+            min_weight = min(weight),
+            .groups = "keep") %>%
   arrange(min_weight)
 ```
 
@@ -385,7 +390,8 @@ surveys %>%
   filter(!is.na(weight)) %>%
   group_by(sex, species_id) %>%
   summarize(mean_weight = mean(weight),
-            min_weight = min(weight)) %>%
+            min_weight = min(weight), 
+            .groups = "keep") %>%
   arrange(desc(mean_weight))
 ```
 
@@ -407,7 +413,7 @@ The `count()` function is shorthand for something we've already seen: grouping b
 ```{r, purl = FALSE}
 surveys %>%
     group_by(sex) %>%
-    summarise(count = n())
+    summarise(count = n(), .groups = "keep")
 ```
 
 For convenience, `count()` provides the `sort` argument:  
@@ -544,7 +550,7 @@ interest, and create a new variable for the `mean_weight`.
 surveys_gw <- surveys %>%
   filter(!is.na(weight)) %>%
   group_by(plot_id, genus) %>%
-  summarize(mean_weight = mean(weight))
+  summarize(mean_weight = mean(weight), .groups = "keep")
 
 str(surveys_gw)
 ```
@@ -567,7 +573,7 @@ although we may wish to fill in the missing values first.
 
 ```{r, purl=FALSE}
 surveys_gw %>%
-  pivot_wider(names_from = genus,values_from = mean_weight,values_fill=0) %>%
+  pivot_wider(names_from = genus, values_from = mean_weight, values_fill=0) %>%
   head()
 ```
 
@@ -629,7 +635,7 @@ surveys_wide %>%
 > ```{r, answer=TRUE, purl=FALSE}
 > surveys_wide_genera <- surveys %>%
 >   group_by(plot_id, year) %>%
->   summarize(n_genera = n_distinct(genus)) %>%
+>   summarize(n_genera = n_distinct(genus), .groups = "keep") %>%
 >   pivot_wider(names_from = year,values_from = n_genera)
 > 
 > head(surveys_wide_genera)
@@ -666,7 +672,7 @@ surveys_wide %>%
 > ```{r, answer=TRUE, purl=FALSE}
 > surveys_longer %>%
 >   group_by(year, measurement, plot_type) %>%
->   summarize(mean_value = mean(value, na.rm=TRUE)) %>%
+>   summarize(mean_value = mean(value, na.rm=TRUE), .groups = "keep") %>%
 >   pivot_wider(names_from="measurement",values_from ="mean_value")
 > ```
 
@@ -764,7 +770,7 @@ folder.
 write_csv(surveys_complete, file = "data/surveys_complete.csv")
 ```
 
-```{r, purl=FALSE, eval=TRUE, echo=FALSE}
+```{r, purl=FALSE, eval=FALSE, echo=FALSE}
 if (!dir.exists("data")) dir.create("data")
 write_csv(surveys_complete, file = "data/surveys_complete.csv")
 ```
